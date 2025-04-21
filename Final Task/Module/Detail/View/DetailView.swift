@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct DetailView: View {
+    @Environment(\.dismiss) var dismiss
     var viewModel: ViewModel
     var userID: String
     
@@ -19,6 +20,7 @@ struct DetailView: View {
                         if let avatar = user.avatar, let url = URL(string: avatar) {
                             AsyncImage(url: url) { image in
                                 image.resizable()
+                                image.scaledToFill()
                             } placeholder: {
                                 Color.gray.opacity(0.3)
                             }
@@ -44,7 +46,7 @@ struct DetailView: View {
                         }
                     }
                     
-                    VStack(alignment: .leading, spacing: 10) {
+                    VStack(alignment: .leading, spacing: 5) {
                         
                         InfoView(image: "clock", text: "Опыт работы: \(user.category) \(user.category.yearForm)")
                         InfoView(image: "cross.case", text: "\(user.scientificDegreeLabel)")
@@ -108,6 +110,19 @@ struct DetailView: View {
             .padding()
             .navigationTitle(user.specialization.first?.name ?? "Врач")
             .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(true)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: {
+                        dismiss()
+                    }) {
+                        Image("Button")
+                            .resizable()
+                            .renderingMode(.original)
+                            .frame(width: 12, height: 20)
+                    }
+                }
+            }
             .background(Color.mainBackground)
         }
     }
@@ -117,11 +132,13 @@ struct DetailView: View {
 struct InfoView: View {
     var image: String
     var text: String
+    
     var body: some View {
-        HStack {
+        HStack(alignment: .center, spacing: 14) {
             Image(systemName: image)
-            
+                .frame(width: 20, alignment: .center)
             Text(text)
+                .lineLimit(1)
         }
         .foregroundColor(.gray)
     }

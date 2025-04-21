@@ -48,6 +48,13 @@ struct User: Codable, Identifiable {
     let category: Int
     let categoryLabel: String
     let isFavorite: Bool
+    
+    var prices: [Int] {
+        [hospitalPrice, textChatPrice, videoChatPrice, homePrice]
+    }
+    
+    var minPrice: Int? { prices.filter { $0 > 0 }.min()
+    }
 
     enum CodingKeys: String, CodingKey {
         case id, slug

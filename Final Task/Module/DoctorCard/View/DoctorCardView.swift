@@ -8,10 +8,30 @@
 import SwiftUI
 
 struct DoctorCardView: View {
-    private var viewModel = ViewModel(network: NetworkManager())
-    @State private var searchText: String = ""
     @State private var navigation = false
     @State private var sUserID: String?
+    
+    
+    var filteredUsers: [User] {
+        if searchText.isEmpty {
+            return viewModel.checkData
+        } else {
+            let words = searchText.lowercased().split(separator: " ").map { String($0) }
+
+            return viewModel.checkData.filter { user in
+                let firstName = user.firstName.lowercased()
+                let lastName = user.lastName.lowercased() 
+                let speciality = user.specialization.first?.name.lowercased() ?? ""
+
+                let fields: [String] = [firstName, lastName, speciality]
+
+                return words.allSatisfy { word in
+                    fields.contains(where: { $0.contains(word) })
+                }
+            }
+        }
+    }
+
     
     var body: some View {
         NavigationStack {
@@ -31,13 +51,13 @@ struct DoctorCardView: View {
                             .frame(width: 18, height: 18)
                             .foregroundStyle(.gray)
                             .padding(.horizontal, 27)
-                            .padding(.vertical, -36)
+                            .padding(.vertical, -38)
                     }
                     
-                    FilterButtonsView()
+                    FilterButtonsView(viewModel: viewModel)
                     
                     LazyVStack() {
-                        ForEach(viewModel.checkData) { user in
+                        ForEach(filteredUsers) { user in
                             DoctorCell(user: user) {
                                 sUserID = user.id
                                 navigation = true
@@ -47,7 +67,7 @@ struct DoctorCardView: View {
                         }
                     }
                     .padding(.top)
-                    .navigationTitle("Педиатры")
+                    .navigationTitle("Врачи")
                     .navigationBarTitleDisplayMode(.inline)
                 }
             }
@@ -60,6 +80,7 @@ struct DoctorCardView: View {
                 }
             }
         }
+        
     }
 }
 

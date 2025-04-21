@@ -8,8 +8,10 @@
 import SwiftUI
 
 struct FilterButtonsView: View {
-    @State var selectedFilter: FilterType = .price
-    @State var sortDirection: SortDirection = .ascending
+    @Bindable var viewModel: ViewModel
+    
+    @State private var selectedFilter: FilterType = .price
+    @State private var sortDirection: SortDirection = .ascending
 
     enum FilterType: CaseIterable {
         case price, experience, rating
@@ -32,41 +34,70 @@ struct FilterButtonsView: View {
             case .descending: return 0
             }
         }
+
+        mutating func toggle() {
+            self = self == .ascending ? .descending : .ascending
+        }
     }
 
     var body: some View {
-            HStack(spacing: 0) {
-                ForEach(FilterType.allCases, id: \.self) { filter in
-                    filterButton(
-                        title: filter.title,
-                        isSelected: selectedFilter == filter,
-                        arrowRotation: selectedFilter == filter ? sortDirection.rotationAngle : 0,
-                        corner: cornerFor(filter: filter)
-                    )
-                    .onTapGesture {
-                        if selectedFilter == filter {
-                            // Меняем направление сортировки
-                            withAnimation {
-                                sortDirection = sortDirection == .ascending ? .descending : .ascending
-                            }
-                        } else {
-                            selectedFilter = filter
-                            // Можно сбросить направление при смене типа сортировки
-                            sortDirection = .descending
+        HStack(spacing: 0) {
+            ForEach(FilterType.allCases, id: \.self) { filter in
+                filterButton(
+                    title: filter.title,
+                    isSelected: selectedFilter == filter,
+                    arrowRotation: selectedFilter == filter ? sortDirection.rotationAngle : 0,
+                    corner: cornerFor(filter: filter)
+                )
+                .onTapGesture {
+                    if selectedFilter == filter {
+                        withAnimation {
+                            sortDirection.toggle()
                         }
+                    } else {
+                        selectedFilter = filter
+                        sortDirection = .descending
                     }
+                    sortUsers()
                 }
             }
-            .overlay(
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(Color.black.opacity(0.1), lineWidth: 2)
-            )
-            .clipShape(RoundedRectangle(cornerRadius: 10))
-            .padding(.horizontal)
         }
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(Color.black.opacity(0.1), lineWidth: 2)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .padding(.horizontal)
+        .onAppear {
+            sortUsers()
+        }
+    }
+    
 
-    // MARK: - Кнопка
-    func filterButton(
+    private func sortUsers() {
+        switch selectedFilter {
+        case .price:
+            viewModel.users.sort {
+                let left = $0.minPrice ?? Int.max
+                let right = $1.minPrice ?? Int.max
+                return sortDirection == .ascending ? left < right : left > right
+            }
+        case .experience:
+            viewModel.users.sort {
+                sortDirection == .ascending
+                    ? $0.category < $1.category
+                    : $0.category > $1.category
+            }
+        case .rating:
+            viewModel.users.sort {
+                sortDirection == .ascending
+                    ? $0.rank < $1.rank
+                    : $0.rank > $1.rank
+            }
+        }
+    }
+
+    private func filterButton(
         title: String,
         isSelected: Bool,
         arrowRotation: Double = 0,
@@ -76,7 +107,6 @@ struct FilterButtonsView: View {
             Text(title)
                 .font(.system(size: 14, weight: .medium))
 
-            // Только у выбранной кнопки показываем и крутим стрелку
             if isSelected {
                 Image(systemName: "arrow.down")
                     .rotationEffect(.degrees(arrowRotation))
@@ -89,8 +119,7 @@ struct FilterButtonsView: View {
         .background(isSelected ? Color.doctorPink : Color.white)
     }
 
-    // MARK: - Определение скругления углов
-    func cornerFor(filter: FilterType) -> UIRectCorner {
+    private func cornerFor(filter: FilterType) -> UIRectCorner {
         switch filter {
         case .price: return [.topLeft, .bottomLeft]
         case .rating: return [.topRight, .bottomRight]

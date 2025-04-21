@@ -18,6 +18,7 @@ struct DoctorCell: View {
                 if let avatar = user.avatar, let url = URL(string: avatar) {
                     AsyncImage(url: url) { image in
                         image.resizable()
+                        image.scaledToFill()
                     } placeholder: {
                         Color.gray.opacity(0.3)
                     }
