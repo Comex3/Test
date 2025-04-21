@@ -10,7 +10,8 @@ import SwiftUI
 struct DoctorCardView: View {
     @State private var navigation = false
     @State private var sUserID: String?
-    
+    private var viewModel = ViewModel(network: NetworkManager())
+    @State private var searchText: String = ""
     
     var filteredUsers: [User] {
         if searchText.isEmpty {
@@ -32,7 +33,6 @@ struct DoctorCardView: View {
         }
     }
 
-    
     var body: some View {
         NavigationStack {
             ScrollView(showsIndicators: false) {
