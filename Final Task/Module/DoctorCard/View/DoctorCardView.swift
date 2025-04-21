@@ -12,6 +12,29 @@ struct DoctorCardView: View {
     @State private var searchText: String = ""
     @State private var navigation = false
     @State private var sUserID: String?
+    private var viewModel = ViewModel(network: NetworkManager())
+    @State private var searchText: String = ""
+    
+    var filteredUsers: [User] {
+        if searchText.isEmpty {
+            return viewModel.checkData
+        } else {
+            let words = searchText.lowercased().split(separator: " ").map { String($0) }
+
+            return viewModel.checkData.filter { user in
+                let firstName = user.firstName.lowercased()
+                let lastName = user.lastName.lowercased() 
+                let speciality = user.specialization.first?.name.lowercased() ?? ""
+
+                let fields: [String] = [firstName, lastName, speciality]
+
+                return words.allSatisfy { word in
+                    fields.contains(where: { $0.contains(word) })
+                }
+            }
+        }
+    }
+
     
     var body: some View {
         NavigationStack {
