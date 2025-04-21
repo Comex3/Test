@@ -8,9 +8,8 @@
 import SwiftUI
 
 struct TabViewContent: View {
-    @State var selected: Int
-    init(selected: Int) {
-        self.selected = selected
+    @State var selected: Int = 0
+    init() {
         UITabBar.appearance().unselectedItemTintColor = .tabGray
     }
     var body: some View {
@@ -50,6 +49,6 @@ struct TabViewContent: View {
 }
 
 #Preview {
-    TabViewContent(selected: 0)
+    TabViewContent()
 }
  

@@ -9,7 +9,6 @@ import SwiftUI
 
 struct FilterButtonsView: View {
     @Bindable var viewModel: ViewModel
-    
     @State private var selectedFilter: FilterType = .price
     @State private var sortDirection: SortDirection = .ascending
 
