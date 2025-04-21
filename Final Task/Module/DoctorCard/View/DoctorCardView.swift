@@ -10,35 +10,14 @@ import SwiftUI
 struct DoctorCardView: View {
     @State private var navigation = false
     @State private var sUserID: String?
-    private var viewModel = ViewModel(network: NetworkManager())
-    @State private var searchText: String = ""
-    
-    var filteredUsers: [User] {
-        if searchText.isEmpty {
-            return viewModel.checkData
-        } else {
-            let words = searchText.lowercased().split(separator: " ").map { String($0) }
-
-            return viewModel.checkData.filter { user in
-                let firstName = user.firstName.lowercased()
-                let lastName = user.lastName.lowercased() 
-                let speciality = user.specialization.first?.name.lowercased() ?? ""
-
-                let fields: [String] = [firstName, lastName, speciality]
-
-                return words.allSatisfy { word in
-                    fields.contains(where: { $0.contains(word) })
-                }
-            }
-        }
-    }
+    @Bindable var viewModel = ViewModel(network: NetworkManager())
 
     var body: some View {
         NavigationStack {
             ScrollView(showsIndicators: false) {
                 VStack {
                     VStack(alignment: .leading) {
-                        TextField("Поиск", text: $searchText)
+                        TextField("Поиск", text: $viewModel.searchText)
                             .frame(height: 44)
                             .padding(.horizontal, 37)
                             .background(Color.white)
@@ -57,7 +36,7 @@ struct DoctorCardView: View {
                     FilterButtonsView(viewModel: viewModel)
                     
                     LazyVStack() {
-                        ForEach(filteredUsers) { user in
+                        ForEach(viewModel.filteredUsers) { user in
                             DoctorCell(user: user) {
                                 sUserID = user.id
                                 navigation = true
