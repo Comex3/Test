@@ -11,7 +11,7 @@ import Foundation
 class ViewModel {
     var users = [User]()
     var network: NetworkProtocol
-//    var searchText: String = ""
+    var searchText: String = ""
     
     
     init(network: NetworkProtocol) {
@@ -29,25 +29,25 @@ class ViewModel {
     }
 
     
-//    var filteredUsers: [User] {
-//            if searchText.isEmpty {
-//                return checkData
-//            } else {
-//                let words = searchText.lowercased().split(separator: " ").map { String($0) }
-//                
-//                return checkData.filter { user in
-//                    let firstName = user.firstName.lowercased()
-//                    let lastName = user.lastName.lowercased()
-//                    let speciality = user.specialization.first?.name.lowercased() ?? ""
-//                    
-//                    let fields: [String] = [firstName, lastName, speciality]
-//                    
-//                    return words.allSatisfy { word in
-//                        fields.contains { $0.contains(word) }
-//                    }
-//                }
-//            }
-//        }
+    var filteredUsers: [User] {
+            if searchText.isEmpty {
+                return checkData
+            } else {
+                let words = searchText.lowercased().split(separator: " ").map { String($0) }
+                
+                return checkData.filter { user in
+                    let firstName = user.firstName.lowercased()
+                    let lastName = user.lastName.lowercased()
+                    let speciality = user.specialization.first?.name.lowercased() ?? ""
+                    
+                    let fields: [String] = [firstName, lastName, speciality]
+                    
+                    return words.allSatisfy { word in
+                        fields.contains { $0.contains(word) }
+                    }
+                }
+            }
+        }
     
     private func getData() {
         self.users = network.getData()

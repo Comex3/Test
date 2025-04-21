@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SDWebImageSwiftUI
 
 struct DoctorCell: View {
     var user: User
@@ -15,20 +16,24 @@ struct DoctorCell: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             HStack(alignment: .top) {
-                if let avatar = user.avatar, let url = URL(string: avatar) {
-                    AsyncImage(url: url) { image in
+                WebImage(url: URL(string: user.avatar ?? "nil")) { image in
                         image.resizable()
                         image.scaledToFill()
                     } placeholder: {
-                        Color.gray.opacity(0.3)
+                        Circle().foregroundStyle(.gray.opacity(0.3))
+                            .frame(width: 60, height: 60)
                     }
-                    .frame(width: 60, height: 60)
-                    .clipShape(Circle())
-                } else {
-                    Circle()
-                        .fill(Color.gray.opacity(0.3))
-                        .frame(width: 60, height: 60)
-                }
+                    .onSuccess { _,_,_  in
+                        print("Изображение успешно загружено")
+                        }
+                    .onFailure { error in
+                        print("Ошибка загрузки: \(error)")
+                        if let sdError = error as? SDWebImageError {
+                            print("Код ошибки SDWebImage: \(sdError.errorCode)")
+                        }
+                    }
+                        .indicator(.activity)
+                        .transition(.fade(duration: 0.5))
                 
                 VStack(alignment: .leading, spacing: 8) {
                     Text("\(user.lastName)")
