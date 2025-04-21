@@ -17,8 +17,7 @@ struct DoctorCell: View {
         VStack(alignment: .leading, spacing: 20) {
             HStack(alignment: .top) {
                 WebImage(url: URL(string: user.avatar ?? "nil")) { image in
-                        image.resizable()
-                        image.scaledToFill()
+                    image.resizable()
                     } placeholder: {
                         Circle().foregroundStyle(.gray.opacity(0.3))
                             .frame(width: 60, height: 60)
@@ -32,8 +31,13 @@ struct DoctorCell: View {
                             print("Код ошибки SDWebImage: \(sdError.errorCode)")
                         }
                     }
+                        .resizable()
                         .indicator(.activity)
                         .transition(.fade(duration: 0.5))
+                        .scaledToFill()
+                        .frame(width: 60, height: 60)
+                        .clipShape(Circle())
+                
                 
                 VStack(alignment: .leading, spacing: 8) {
                     Text("\(user.lastName)")

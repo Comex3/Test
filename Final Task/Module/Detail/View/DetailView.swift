@@ -18,10 +18,8 @@ struct DetailView: View {
             VStack(alignment: .leading, spacing: 16) {
                 VStack(alignment: .leading, spacing: 16) {
                     HStack {
-                        if let avatar = user.avatar {
                             WebImage(url: URL(string: user.avatar ?? "nil")) { image in
                                 image.resizable()
-                                image.scaledToFill()
                             } placeholder: {
                                 Circle().foregroundStyle(.gray.opacity(0.3))
                                     .frame(width: 60, height: 60)
@@ -35,9 +33,12 @@ struct DetailView: View {
                                     print("Код ошибки SDWebImage: \(sdError.errorCode)")
                                 }
                             }
+                            .resizable()
                             .indicator(.activity)
                             .transition(.fade(duration: 0.5))
-                        }
+                            .scaledToFill()
+                            .frame(width: 60, height: 60)
+                            .clipShape(Circle())
                         
                         VStack(alignment: .leading, spacing: 8) {
                             Text("\(user.lastName)")
